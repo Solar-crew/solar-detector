@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "workspaces": [
+    "apps/frontend",
+    "packages/shared-js"
+  ]
+}
