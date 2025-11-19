@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { SunMedium, Map, Zap } from 'lucide-react';
+import { SolarPanel, Map, Zap, SunMedium } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -10,7 +10,7 @@ export function LandingPage() {
         {/* Hero Section */}
         <div className="text-center space-y-4">
           <div className="flex justify-center">
-            <SunMedium className="w-16 h-16 text-accent animate-pulse" />
+            <SolarPanel className="w-16 h-16 text-accent animate-pulse" />
           </div>
           <h1 className="text-5xl font-bold tracking-tight">Solar Detector</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">

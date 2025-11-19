@@ -1,19 +1,26 @@
-import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer } from 'react-leaflet';
-import { SunMedium, LogOut } from 'lucide-react';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { Button } from '@/components/ui/button';
+import { Outlet } from 'react-router-dom';
+import { MapContainer, TileLayer, useMap as useLeafletMap } from 'react-leaflet';
+import { useEffect } from 'react';
+import { MapControls } from '@/components/MapControls';
 import { useAuth } from '@/hooks/useAuth';
+import { useMap } from '@/contexts/MapContext';
 import 'leaflet/dist/leaflet.css';
 
-export function AppLayout() {
-  const { logout, user } = useAuth();
-  const navigate = useNavigate();
+// Helper component to connect Leaflet map to context
+function MapConnector() {
+  const leafletMap = useLeafletMap();
+  const { setMap } = useMap();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  useEffect(() => {
+    setMap(leafletMap);
+    return () => setMap(null);
+  }, [leafletMap, setMap]);
+
+  return null;
+}
+
+export function AppLayout() {
+  const { user } = useAuth();
 
   // Default center (San Francisco)
   const center: [number, number] = user?.location
@@ -24,12 +31,8 @@ export function AppLayout() {
     <div className="relative h-screen w-screen overflow-hidden">
       {/* Full-screen Leaflet Map */}
       <div className="absolute inset-0 z-0">
-        <MapContainer
-          center={center}
-          zoom={13}
-          className="h-full w-full"
-          zoomControl={false}
-        >
+        <MapContainer center={center} zoom={13} className="h-full w-full" zoomControl={false}>
+          <MapConnector />
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -37,25 +40,12 @@ export function AppLayout() {
         </MapContainer>
       </div>
 
-      {/* Top Navigation Bar */}
-      <div className="absolute top-0 left-0 right-0 z-20 bg-card/90 backdrop-blur-sm border-b border-border">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/app" className="flex items-center gap-2 font-semibold text-lg">
-            <SunMedium className="w-6 h-6 text-accent" />
-            Solar Detector
-          </Link>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Logout">
-              <LogOut className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-      </div>
+      {/* Map Controls (Search + Location) - includes Theme Toggle and Logout */}
+      <MapControls />
 
       {/* Top-Left Floating Panel */}
-      <div className="absolute top-20 left-4 z-10 w-96 max-h-[calc(100vh-6rem)] overflow-y-auto">
-        <div className="bg-card/95 backdrop-blur-sm border border-border rounded-lg shadow-lg p-6">
+      <div className="absolute top-4 left-4 z-10 w-20 h-[calc(100vh-2rem)] overflow-y-auto">
+        <div className="bg-card/95 backdrop-blur-sm border border-border rounded-lg shadow-lg p-2 pt-4 h-full">
           <Outlet />
         </div>
       </div>

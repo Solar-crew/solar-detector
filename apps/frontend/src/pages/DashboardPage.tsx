@@ -1,12 +1,12 @@
+import { SolarPanel } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
 export function DashboardPage() {
   return (
     <div className="h-full flex items-center justify-center">
-      <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold">Solar Detector Dashboard</h1>
-        <p className="text-muted-foreground">
-          Map and analysis features will be displayed here
-        </p>
-      </div>
+      <Link to="/app" className="flex items-center gap-2 font-semibold text-lg self-start">
+        <SolarPanel className="size-8 text-accent" />
+      </Link>
     </div>
   );
 }
