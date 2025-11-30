@@ -1,0 +1,22 @@
+{
+  "name": "solar-detector-api-dev",
+  "dockerComposeFile": [
+    "infra/docker/docker-compose.yml"
+  ],
+  "service": "api",
+  "workspaceFolder": "/app",
+
+  "shutdownAction": "none",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
+      }
+    }
+  }
+}
