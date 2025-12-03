@@ -314,4 +314,3 @@ cd infra/docker && docker compose logs -f db
 
 For questions or issues, please open an issue on GitHub.
 
-  
