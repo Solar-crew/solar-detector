@@ -1,15 +1,38 @@
-import { Button } from './components/ui/button';
-import { SunMedium } from 'lucide-react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { PublicLayout } from '@/layouts/PublicLayout';
+import { AppLayout } from '@/layouts/AppLayout';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { LandingPage } from '@/pages/LandingPage';
+import { LoginPage } from '@/pages/LoginPage';
+import { RegisterPage } from '@/pages/RegisterPage';
+import { DashboardPage } from '@/pages/DashboardPage';
+import { NotFoundPage } from '@/pages/NotFoundPage';
 
 export default function App() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-linear-to-b from-slate-900 to-slate-950 text-white">
-      <div className="text-center space-y-4">
-        <SunMedium className="w-12 h-12 mx-auto text-yellow-400 animate-pulse" />
-        <h1 className="text-3xl font-semibold">Hello from ShadCN + Vite + React ⚡️</h1>
-        <p className="text-slate-400">Your frontend is up and running!</p>
-        <Button>Get Started</Button>
-      </div>
-    </main>
+    <BrowserRouter>
+      <Routes>
+        {/* Public routes with PublicLayout */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/404" element={<NotFoundPage />} />
+          <Route path="*" element={<Navigate to="/404" replace />} />
+        </Route>
+
+        {/* Protected routes with AppLayout */}
+        <Route
+          path="/app"
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<DashboardPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }

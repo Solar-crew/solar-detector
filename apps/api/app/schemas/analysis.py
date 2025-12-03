@@ -1,5 +1,5 @@
-from datetime import datetime
-from typing import Optional
+from datetime import date, datetime
+from typing import Optional, List
 
 from pydantic import BaseModel, Field, ConfigDict
 
@@ -41,3 +41,29 @@ class AnalysisResponse(AnalysisBase):
     updated_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class CloudinessStats(BaseModel):
+    scenes_used: int
+    dates: List[str]
+    cloud_fractions: List[float]
+    valid_ratios: List[float]
+
+    mean_cloudiness: float
+    clear_ratio: float  # fraction of scenes with cf < 0.2
+
+    least_cloudy_date: str
+    least_cloudy_fraction: float
+
+    most_cloudy_date: str
+    most_cloudy_fraction: float
+
+    near_mean_date: str
+    near_mean_fraction: float
+
+class CloudinessTestRequest(BaseModel):
+    center_lat: float
+    center_lon: float
+    radius_m: float
+    start_date: date
+    end_date: date

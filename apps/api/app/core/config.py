@@ -30,5 +30,23 @@ class Settings(BaseSettings):
         extra="allow",
     )
 
+    CDS_CLIENT_ID: str = "cdse-public"
+    CDS_USERNAME: str  # set via env var
+    CDS_PASSWORD: str  # set via env var
+
+    CDS_TOKEN_URL: str = (
+        "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token"
+    )
+    CDS_CATALOG_URL: str = (
+        "https://catalogue.dataspace.copernicus.eu/resto/api/collections/Sentinel2/search.json"
+    )
+    CDS_PROCESS_URL: str = "https://sh.dataspace.copernicus.eu/api/v1/process"
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+        extra="allow",
+    )
+
 
 settings = Settings()

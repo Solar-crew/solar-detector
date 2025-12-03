@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.models.analysis import Analysis
-from app.schemas.analysis import AnalysisCreate, AnalysisResponse, AnalysisUpdate
+from app.schemas.analysis import AnalysisCreate, AnalysisResponse, AnalysisUpdate, CloudinessTestRequest, CloudinessStats
+from app.services.cloud_service import compute_cloudiness_for_circle
 
 router = APIRouter()
 
@@ -98,3 +99,13 @@ def delete_analysis(
     db.delete(analysis)
     db.commit()
     return None
+
+@router.post("/cloudiness-test", response_model=CloudinessStats)
+def cloudiness_test(body: CloudinessTestRequest) -> CloudinessStats:
+    return compute_cloudiness_for_circle(
+        center_lat=body.center_lat,
+        center_lon=body.center_lon,
+        radius_m=body.radius_m,
+        start_date=body.start_date,
+        end_date=body.end_date,
+    )

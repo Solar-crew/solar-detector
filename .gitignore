@@ -1,6 +1,7 @@
 # Environment variables
 .env
 .env.local
+apps/api/.env
 infra/docker/.env
 
 # Python
@@ -47,6 +48,7 @@ build/
 *.swo
 *~
 .DS_Store
+CLAUDE.md
 
 # Docker
 *.log

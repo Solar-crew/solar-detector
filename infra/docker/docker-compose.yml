@@ -11,7 +11,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-solar_detector}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -32,6 +32,8 @@ services:
       API_V1_PREFIX: ${API_V1_PREFIX:-/api/v1}
     volumes:
       - ../../apps/api:/app
+    working_dir: /app
+    command: ["sh", "start.sh"]
     depends_on:
       db:
         condition: service_healthy
