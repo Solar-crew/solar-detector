@@ -29,6 +29,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-solar_detector}
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
+      CDS_USERNAME: teomaster1886@yahoo.com
+      CDS_PASSWORD: S0l4rCreW!AcCon7@
       API_V1_PREFIX: ${API_V1_PREFIX:-/api/v1}
     volumes:
       - ../../apps/api:/app
