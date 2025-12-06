@@ -5,16 +5,20 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.models.analysis import Analysis
-from app.schemas.analysis import AnalysisCreate, AnalysisResponse, AnalysisUpdate, CloudinessTestRequest, CloudinessStats
+from app.schemas.analysis import ( AnalysisCreate, AnalysisResponse, AnalysisUpdate, CloudinessTestRequest, CloudinessStats)
+from app.schemas.site_score import SiteScoreResponse, SiteScoreRequest, FeatureScore, TimeRange, SiteLocation 
 from app.services.cloud_service import compute_cloudiness_for_circle
+from app.services.elevation_service import compute_elevation_score
 
 router = APIRouter()
 
 
 @router.post("/", response_model=AnalysisResponse, status_code=201)
 def create_analysis(
+    body: SiteScoreRequest,
     analysis_data: AnalysisCreate,
     db: Session = Depends(get_db),
+    
 ):
     """
     Create a new solar panel suitability analysis.
@@ -22,7 +26,12 @@ def create_analysis(
     This endpoint initiates an analysis for a specific location.
     The actual analysis computation can be done asynchronously.
     """
+    lat = body.location.lat
+    lon = body.location.lon
+    radius_m = body.location.radius_m
     analysis = Analysis(**analysis_data.model_dump())
+############################# This has to be patched, left 1 only to test########################################################
+    analysis.extra_data = compute_elevation_score(lat, lon, radius_m, weight=1).model_dump()
     db.add(analysis)
     db.commit()
     db.refresh(analysis)
@@ -41,6 +50,7 @@ def list_analyses(
     - **skip**: Number of records to skip (pagination)
     - **limit**: Maximum number of records to return
     """
+
     analyses = db.query(Analysis).offset(skip).limit(limit).all()
     return analyses
 
@@ -108,4 +118,16 @@ def cloudiness_test(body: CloudinessTestRequest) -> CloudinessStats:
         radius_m=body.radius_m,
         start_date=body.start_date,
         end_date=body.end_date,
+    )
+
+#  SiteScoreResponse, SiteScoreRequest, FeatureScore, TimeRange, SiteLocation need to be used
+
+@router.post("/elevation-test", response_model=FeatureScore)
+def elevation_test(body: SiteScoreRequest) -> FeatureScore:
+    return compute_elevation_score(
+        lat=body.location.lat,
+        lon=body.location.lon,
+        radius_m=body.location.radius_m,
+        # This should be set elsewhere
+        weight=1
     )

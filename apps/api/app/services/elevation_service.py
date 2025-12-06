@@ -1,4 +1,4 @@
-from app.schemas.site_score import FeatureScore
+from app.schemas.site_score import FeatureScore, SiteScoreRequest 
 from typing import Dict
 import math
 
