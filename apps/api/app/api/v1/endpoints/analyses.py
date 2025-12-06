@@ -7,6 +7,8 @@ from app.core.database import get_db
 from app.models.analysis import Analysis
 from app.schemas.analysis import AnalysisCreate, AnalysisResponse, AnalysisUpdate, CloudinessTestRequest, CloudinessStats
 from app.services.cloud_service import compute_cloudiness_for_circle
+from app.services.elevation_service import compute_elevation_score
+
 
 router = APIRouter()
 
@@ -66,21 +68,46 @@ def update_analysis(
     db: Session = Depends(get_db),
 ):
     """
-    Update an existing analysis with computed results.
-
-    This endpoint is typically called after the analysis computation is complete.
+    Run the actual analysis for the given location.
+    Computes elevation slope and stores it inside extra_data.
     """
     analysis = db.query(Analysis).filter(Analysis.id == analysis_id).first()
     if not analysis:
         raise HTTPException(status_code=404, detail="Analysis not found")
 
-    # Update only provided fields
+    # -------------------------------------------
+    # 1. Compute slope from DEM for this location
+    # -------------------------------------------
+    elevation_score = compute_elevation_score(
+        lat=analysis.latitude,
+        lon=analysis.longitude,
+        radius_m=500,
+        weight=1.0,
+    )
+
+    # -------------------------------------------
+    # 2. Build / update extra_data
+    # -------------------------------------------
+    extra = analysis.extra_data or {}
+
+    extra["mean_slope_deg"] = elevation_score.raw_value
+    extra["slope_normalized"] = elevation_score.normalized
+
+    analysis.extra_data = extra
+
+    # -------------------------------------------
+    # 3. Apply any manual updates sent in PATCH body
+    # -------------------------------------------
     update_data = analysis_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(analysis, field, value)
 
+    # -------------------------------------------
+    # 4. Save
+    # -------------------------------------------
     db.commit()
     db.refresh(analysis)
+
     return analysis
 
 
