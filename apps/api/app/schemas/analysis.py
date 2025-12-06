@@ -14,6 +14,8 @@ class AnalysisBase(BaseModel):
 
 class AnalysisCreate(AnalysisBase):
     """Schema for creating a new analysis"""
+    # we should have the basics here and added to that additional information 
+    
 
     pass
 
